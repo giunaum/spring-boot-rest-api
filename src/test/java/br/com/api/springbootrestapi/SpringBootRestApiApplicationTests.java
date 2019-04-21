@@ -24,56 +24,73 @@ import static org.junit.Assert.assertTrue;
 @FixMethodOrder(value = MethodSorters.JVM)
 public class SpringBootRestApiApplicationTests {
 
-	private static final String REGEX_NUMBER = "[^0-9]";
-
 	@Autowired
 	private PessoaBusiness pessoaBusiness;
 
 	@Test
 	public void salvarPessoa() throws PessoaBusinessException {
-		String msg = pessoaBusiness.salvarOuAtualizarPessoa("TesteSalvar", 25);
-		assertTrue(msg.contains(MessageConfig.getMensagem(MessageCode.SUCESSO_SALVAR_PESSOA)));
+		Pessoa pessoa = new Pessoa();
+		pessoa.setNome("TesteSalvar");
+		pessoa.setIdade(25);
+
+		Pessoa pessoaPesistida = pessoaBusiness.salvarPessoa(pessoa);
+		assertNotNull(pessoaPesistida);
 	}
 
 	@Test
 	public void alterarPessoa() throws PessoaBusinessException {
-		String msgSalvar = pessoaBusiness.salvarOuAtualizarPessoa("TesteAlterar", 27);
-		assertTrue(msgSalvar.contains(MessageConfig.getMensagem(MessageCode.SUCESSO_SALVAR_PESSOA)));
+		Pessoa pessoa = new Pessoa();
+		pessoa.setNome("TesteAlterar");
+		pessoa.setIdade(27);
 
-		Integer id = Integer.parseInt(msgSalvar.replaceAll(REGEX_NUMBER, ""));
+		Pessoa pessoaPesistida = pessoaBusiness.salvarPessoa(pessoa);
+		assertNotNull(pessoaPesistida);
 
-		String msgAlterar = pessoaBusiness.salvarOuAtualizarPessoa("TesteAlterado", 26, id);
-		assertTrue(msgAlterar.contains(MessageConfig.getMensagem(MessageCode.SUCESSO_ALTERAR_PESSOA)));
+		Pessoa pessoaParaSerAlterada = new Pessoa();
+		pessoaParaSerAlterada.setId((Integer) pessoaPesistida.getId());
+		pessoaParaSerAlterada.setNome("TesteAlterado");
+		pessoaParaSerAlterada.setIdade(26);
+
+		Pessoa pessoaAlterada = pessoaBusiness.salvarPessoa(pessoaParaSerAlterada);
+		assertNotNull(pessoaAlterada);
 	}
 
 	@Test
 	public void getPessoas() throws PessoaBusinessException {
-		String msgPessoas = pessoaBusiness.salvarOuAtualizarPessoa("TestePessoas", 30);
-		assertTrue(msgPessoas.contains(MessageConfig.getMensagem(MessageCode.SUCESSO_SALVAR_PESSOA)));
+		Pessoa pessoa = new Pessoa();
+		pessoa.setNome("TestePessoas");
+		pessoa.setIdade(30);
 
-		List<Pessoa> clientesTO = pessoaBusiness.getPessoas();
-		assertTrue(!Util.isEmpty(clientesTO));
+		Pessoa pessoaPersistida = pessoaBusiness.salvarPessoa(pessoa);
+		assertNotNull(pessoaPersistida);
+
+		List<Pessoa> pessoas = pessoaBusiness.getPessoas();
+		assertTrue(!Util.isEmpty(pessoas));
 	}
 
 	@Test
 	public void getPessoaById() throws PessoaBusinessException {
-		String msgSalvar = pessoaBusiness.salvarOuAtualizarPessoa("TesteConsultar", 28);
-		assertTrue(msgSalvar.contains(MessageConfig.getMensagem(MessageCode.SUCESSO_SALVAR_PESSOA)));
+		Pessoa pessoa = new Pessoa();
+		pessoa.setNome("TesteConsultar");
+		pessoa.setIdade(28);
 
-		Integer id = Integer.parseInt(msgSalvar.replaceAll(REGEX_NUMBER, ""));
+		Pessoa pessoaPersistida = pessoaBusiness.salvarPessoa(pessoa);
+		assertNotNull(pessoaPersistida);
 
-		Pessoa pessoa = pessoaBusiness.getPessoaById(id);
-		assertNotNull(pessoa);
+		Pessoa pessoaConsultada = pessoaBusiness.getPessoaById((Integer) pessoaPersistida.getId());
+		assertNotNull(pessoaConsultada);
 	}
 
 	@Test
 	public void excluirPessoa() throws PessoaBusinessException {
-		String msgSalvar = pessoaBusiness.salvarOuAtualizarPessoa("TesteExcluir", 29);
-		assertTrue(msgSalvar.contains(MessageConfig.getMensagem(MessageCode.SUCESSO_SALVAR_PESSOA)));
+		Pessoa pessoa = new Pessoa();
+		pessoa.setNome("TesteExcluir");
+		pessoa.setIdade(29);
 
-		Integer id = Integer.parseInt(msgSalvar.replaceAll(REGEX_NUMBER, ""));
+		Pessoa pessoPersistida = pessoaBusiness.salvarPessoa(pessoa);
+		assertNotNull(pessoPersistida);
 
-		String msgExcluir = pessoaBusiness.excluirPessoa(id);
-		assertTrue(msgExcluir.contains(MessageConfig.getMensagem(MessageCode.SUCESSO_EXCLUIR_PESSOA)));
+		Integer idExcluido = pessoaBusiness.excluirPessoa((Integer) pessoPersistida.getId());
+		assertTrue(!Util.isEmpty(idExcluido));
 	}
 }

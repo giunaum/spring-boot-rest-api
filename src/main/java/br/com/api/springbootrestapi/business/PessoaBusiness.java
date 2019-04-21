@@ -84,32 +84,22 @@ public class PessoaBusiness {
 	/**
 	 * Salva ou atualiza a entidade {@link Pessoa} conforme os parâmetros fornecidos.
 	 *
-	 * @param nome
-	 * @param idade
+	 * @param pessoa
 	 * @return
 	 * @throws PessoaBusinessException
 	 */
-	public String salvarOuAtualizarPessoa(final String nome, final Integer idade) throws PessoaBusinessException {
-		return salvarOuAtualizarPessoa(nome, idade, null);
-	}
+	public Pessoa salvarPessoa(final Pessoa pessoa) throws PessoaBusinessException {
+		if (pessoa == null) {
+			throw new PessoaBusinessException("Pessoa não fornecida. Impossível prosseguir.");
+		}
 
-	/**
-	 * Salva ou atualiza a entidade {@link Pessoa} conforme os parâmetros fornecidos.
-	 *
-	 * @param nome
-	 * @param idade
-	 * @param id
-	 * @return
-	 * @throws PessoaBusinessException
-	 */
-	public String salvarOuAtualizarPessoa(final String nome, final Integer idade, final Integer id) throws PessoaBusinessException {
 		List<String> parametros = new ArrayList<>();
 
-		if (Util.isBlank(nome)) {
+		if (Util.isBlank(pessoa.getNome())) {
 			parametros.add("Nome");
 		}
 
-		if (idade == null) {
+		if (pessoa.getIdade() == null) {
 			parametros.add("Idade");
 		}
 
@@ -117,27 +107,15 @@ public class PessoaBusiness {
 			throw new PessoaBusinessException(MessageCode.PARAMETROS_OBRIGATORIOS, parametros);
 		}
 
-		boolean isPersistido = !Util.isEmpty(id) && id > BigInteger.ZERO.intValue();
-		Pessoa pessoa = getPessoaPreenchido(id, nome, idade, isPersistido);
-		Pessoa pessoaPersistido;
+		boolean isPersistido = !Util.isEmpty((Integer) pessoa.getId());
 
 		try {
-			pessoaPersistido = pessoaDAO.persistir(pessoa);
+			return pessoaDAO.persistir(pessoa);
 		} catch (DAOException e) {
 			String msg = MessageConfig.getMensagem(isPersistido ? MessageCode.FALHA_ALTERAR_PESSOA : MessageCode.FALHA_SALVAR_PESSOA);
 			logger.error(msg, e);
 			throw new PessoaBusinessException(msg, e);
 		}
-
-		StringBuilder mensagem = new StringBuilder();
-		if (pessoaPersistido == null) {
-			throw new PessoaBusinessException(isPersistido ? MessageCode.PESSOA_NAO_ATUALIZADO : MessageCode.PESSOA_NAO_SALVO);
-		} else {
-			mensagem.append(MessageConfig.getMensagem(isPersistido ? MessageCode.SUCESSO_ALTERAR_PESSOA : MessageCode.SUCESSO_SALVAR_PESSOA));
-			mensagem.append(" [ID: ").append(pessoa.getId().toString()).append("]");
-		}
-
-		return mensagem.toString();
 	}
 
 	/**
@@ -147,7 +125,7 @@ public class PessoaBusiness {
 	 * @throws PessoaBusinessException
 	 * @return
 	 */
-	public String excluirPessoa(final Integer id) throws PessoaBusinessException {
+	public Integer excluirPessoa(final Integer id) throws PessoaBusinessException {
 		if (id == null) {
 			throw new PessoaBusinessException(MessageCode.PESSOA_NAO_FORNECIDO);
 		}
@@ -155,35 +133,11 @@ public class PessoaBusiness {
 		try {
 			Pessoa pessoa = getPessoaById(id);
 			pessoaDAO.excluir(pessoa);
+			return id;
 		} catch (DAOException e) {
 			String msg = MessageConfig.getMensagem(MessageCode.FALHA_EXCLUIR_PESSOA);
 			logger.error(msg, e);
 			throw new PessoaBusinessException(msg, e);
 		}
-
-		return MessageConfig.getMensagem(MessageCode.SUCESSO_EXCLUIR_PESSOA);
-	}
-
-	/**
-	 * Retorna o {@link Pessoa} preenchido conforme os parâmetros informados.
-	 *
-	 * @param id
-	 * @param nome
-	 * @param idade
-	 * @param isPersistido
-	 * @return
-	 * @throws PessoaBusinessException
-	 */
-	private Pessoa getPessoaPreenchido(final Integer id, final String nome, final Integer idade, final boolean isPersistido) throws PessoaBusinessException {
-		Pessoa pessoa = isPersistido ? getPessoaById(id) : new Pessoa();
-
-		if (isPersistido) {
-			pessoa.setId(id);
-		}
-
-		pessoa.setNome(nome);
-		pessoa.setIdade(idade);
-
-		return pessoa;
 	}
 }

@@ -15,19 +15,19 @@ import java.util.List;
  */
 @Controller
 @RestController
-@RequestMapping(value = "/pessoa")
+@RequestMapping(value = "/pessoas")
 public class PessoaController implements Serializable {
 
 	@Autowired
 	private PessoaBusiness pessoaBusiness;
 
 	/**
-	 * Recupera os clientes.
+	 * Recupera as Pessoas.
 	 *
 	 * @return
 	 * @throws PessoaBusinessException
 	 */
-	@GetMapping(value = "/listar")
+	@GetMapping
 	@ResponseBody
 	public List<Pessoa> getPessoas() throws PessoaBusinessException {
 		return pessoaBusiness.getPessoas();
@@ -40,7 +40,7 @@ public class PessoaController implements Serializable {
 	 * @return
 	 * @throws PessoaBusinessException
 	 */
-	@GetMapping(value = "/obter/{id}")
+	@GetMapping(value = "/{id}")
 	@ResponseBody
 	public Pessoa getPessoaById(@PathVariable Integer id) throws PessoaBusinessException {
 		return pessoaBusiness.getPessoaById(id);
@@ -49,41 +49,26 @@ public class PessoaController implements Serializable {
 	/**
 	 * Salva a entidade {@link Pessoa} conforme os parâmetros fornecidos.
 	 *
-	 * @param nome
-	 * @param idade
-	 * @throws PessoaBusinessException
+	 * @param pessoa
 	 * @return
-	 */
-	@GetMapping(value = "/salvar/{nome}/{idade}")
-	@ResponseBody
-	public String salvarPessoa(@PathVariable String nome, @PathVariable Integer idade) throws PessoaBusinessException {
-		return pessoaBusiness.salvarOuAtualizarPessoa(nome, idade);
-	}
-
-	/**
-	 * Salva a entidade {@link Pessoa} conforme os parâmetros fornecidos.
-	 *
-	 * @param nome
-	 * @param idade
-	 * @param id
 	 * @throws PessoaBusinessException
-	 * @return
 	 */
-	@GetMapping(value = "/atualizar/{nome}/{idade}/{id}")
+	@PostMapping
 	@ResponseBody
-	public String alterarliente(@PathVariable String nome, @PathVariable Integer idade, @PathVariable Integer id) throws PessoaBusinessException {
-		return pessoaBusiness.salvarOuAtualizarPessoa(nome, idade, id);
+	public Pessoa salvarPessoa(@RequestBody Pessoa pessoa) throws PessoaBusinessException {
+		return pessoaBusiness.salvarPessoa(pessoa);
 	}
 
 	/**
 	 * Salva a entidade {@link Pessoa}.
 	 *
 	 * @param id
+	 * @return
 	 * @throws PessoaBusinessException
 	 */
-	@GetMapping(value = "/excluir/{id}")
+	@DeleteMapping(value = "/{id}")
 	@ResponseBody
-	public String excluirPessoa(@PathVariable Integer id) throws PessoaBusinessException {
+	public Integer excluirPessoa(@PathVariable Integer id) throws PessoaBusinessException {
 		return pessoaBusiness.excluirPessoa(id);
 	}
 }
