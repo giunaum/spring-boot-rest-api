@@ -1,6 +1,7 @@
 package br.com.api.springbootrestapi.controller;
 
 import br.com.api.springbootrestapi.business.PessoaBusiness;
+import br.com.api.springbootrestapi.dto.PessoaDTO;
 import br.com.api.springbootrestapi.entities.Pessoa;
 import br.com.api.springbootrestapi.exceptions.PessoaBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class PessoaController implements Serializable {
 	 */
 	@GetMapping
 	@ResponseBody
-	public List<Pessoa> getPessoas() throws PessoaBusinessException {
+	public List<PessoaDTO> getPessoas() throws PessoaBusinessException {
 		return pessoaBusiness.getPessoas();
 	}
 
@@ -42,7 +43,7 @@ public class PessoaController implements Serializable {
 	 */
 	@GetMapping(value = "/{id}")
 	@ResponseBody
-	public Pessoa getPessoaById(@PathVariable Integer id) throws PessoaBusinessException {
+	public PessoaDTO getPessoaById(@PathVariable Integer id) throws PessoaBusinessException {
 		return pessoaBusiness.getPessoaById(id);
 	}
 
@@ -55,7 +56,7 @@ public class PessoaController implements Serializable {
 	 */
 	@PostMapping
 	@ResponseBody
-	public Pessoa salvarPessoa(@RequestBody Pessoa pessoa) throws PessoaBusinessException {
+	public PessoaDTO salvarPessoa(@RequestBody PessoaDTO pessoa) throws PessoaBusinessException {
 		return pessoaBusiness.salvarPessoa(pessoa);
 	}
 
